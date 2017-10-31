@@ -28,28 +28,16 @@ int h_linha_1(){
 }
 
 int h_linha_2(){
-  //i = peça da frente
-  //j = peca de tras
-  int pecas_fora, i, j;
+  int pecas_fora, i;
 
-  pecas_fora = j = 0;
+  pecas_fora = 0;
   i = 1;
   while(i <16){
-    if (tabuleiro[i] == 0){
-      i++;
-    }
-    if (tabuleiro[j] == 0){
-      j++;
-    }
-    if(tabuleiro[i] == tabuleiro[j]){
-      i++;
-    }
-    if(tabuleiro[i] != (tabuleiro[j]+1)){
+    if (tabuleiro[i-1] == 0){ i++;}
+    if(tabuleiro[i] != (tabuleiro[i-1]+1)){
       pecas_fora++;
     }
-
     i++;
-    j++;
   }
 
   return pecas_fora;
@@ -112,41 +100,8 @@ void le_tabuleiro(){
             &in[2][0], &in[2][1], &in[2][2], &in[2][3],
             &in[3][0], &in[3][1], &in[3][2], &in[3][3]);
 
-  /*for (i = 0; i < 4; i++) {
-    for(j=0; j< 4; j++){
-      printf("\nInsira a peça A[%d, %d]: ", i+1, j+1);
-      scanf("%d", &entrada[i][j]);
-    }
-  }*/
-  //print_entrada(entrada);
   organiza_espiral(in);
 }
-
-//Le o tabuleiro do arquivo e salva na memoria
-/*void le_tabuleiro_arquivo(){
-  int i,j;
-  char c;
-  FILE* tab;
-
-  i = j = 0;
-  tab = fopen("puzzle.txt", "r");
-
-  printf("Lendo tabuleiro...\n");
-  while((c = fgetc(tab)) != '\n'){
-    fprintf("%c ", c);
-    if (c != ' '){
-      tabuleiro[i][j] = c - '0';
-      if (i==3){
-        i = 0;
-        j++;
-      } else {
-        i++;
-      }
-    }
-  }
-  printf("Lendo lido!\n");
-  fclose(tab);
-}*/
 
 int main(){
   //int h1;
