@@ -4,15 +4,15 @@
 #include <math.h>
 #include <string.h>
 
-// ========================== Variaveis globais ========================== 
-int in[4][4];
-int tabuleiro[16];
-posicoes pecas_corretas[16];
-
 // ========================== Estruturas ========================== 
 typedef struct {
   int i, j;
 }posicoes;
+
+// ========================== Variaveis globais ========================== 
+int in[4][4];
+int tabuleiro[16];
+posicoes pecas_corretas[16];
 
 // ========================== Funcoes gerais ========================== 
 void organiza_posicoes_pecas(){
@@ -66,8 +66,41 @@ void organiza_posicoes_pecas(){
   
 }
 
-int distancia_manhatan(int valor, int i, int j){
+int max_3(int v1, int v2, int v3){
+  int maior;
   
+  if (v1 > v2 && v1 > v3){
+    maior = v1;
+  } else if (v2 > v3){
+    maior = v2;
+  } else {
+    maior = v3;
+  }
+
+  return maior;
+}
+
+int distancia_manhatan(int valor, int i, int j){
+  int i_correto, j_correto, soma;
+
+  soma = 0;
+
+  i_correto = pecas_corretas[valor].i;
+  j_correto = pecas_corretas[valor].j;
+
+  if (i > i_correto){
+    soma += i - i_correto;
+  } else {
+    soma += i_correto - i;
+  }
+
+  if (j > j_correto){
+    soma += j - j_correto;
+  } else {
+    soma += j_correto - j;
+  }
+
+  return soma;
 }
 
 void organiza_espiral(int entrada[][4]){
@@ -138,22 +171,27 @@ int h_linha_2(){
 }
 
 int h_linha_3(){
-  int tabuleiro_correto = {[1,2,3,4],
-                           [12,13,14,5],
-                           [11,0,15,6],
-                           [10,9,8,7]
-                          }
   int i, j, soma;
 
   soma = 0;
 
   for(i=0; i<4; i++){
     for(j=0; j<4; j++){
-      soma += distancia_manhatan(in[i][j], i, j);
+      if (in[i][j] != 0){
+        soma += distancia_manhatan(in[i][j], i, j);
+      }
     }
   }
 
   return soma;
+}
+
+int h_linha_4(){
+  return 0;
+}
+
+int h_linha_5(){
+  return max_3(h_linha_1(), h_linha_2(), h_linha_3());
 }
 
 // ========================== In/Out ========================== 
@@ -184,18 +222,22 @@ void print_entrada(int entrada[][4]){
 
 //  ========================== main  ========================== 
 int main(){
-  int h1;
+  //int h1;
   //int h2;
+  int h3;
 
-  organiza_posicoes_pecas()
+  organiza_posicoes_pecas();
   le_tabuleiro();
   //print_inline_tabuleiro();
 
-  h1 = h_linha_1();
-  printf("%d", h1);
+  //h1 = h_linha_1();
+  //printf("%d", h1);
 
   //h2 = h_linha_2();
   //printf("%d", h2);
+
+  h3 = h_linha_3();
+  printf("%d", h3);
 
   return 0;
 }
