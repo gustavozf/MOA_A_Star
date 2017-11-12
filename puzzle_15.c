@@ -3,19 +3,38 @@
 #include <stdio_ext.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 
 // ========================== Estruturas ========================== 
+typedef struct entrada_A_star entrada_A_star;
+
 typedef struct {
   int i, j;
 }posicoes;
 
+struct entrada_A_star{
+  int matriz;
+  int g, h;
+  entrada_A_star* Pai;
+};
+
+typedef struct{
+  entrada_A_star entrada;
+  entrada_A_star* proximo;
+} estados;
+
 // ========================== Variaveis globais ========================== 
-int in[4][4];
-int tabuleiro[16];
-posicoes pecas_corretas[16];
+int in[4][4]; // Entrada em forma de matriz
+int tabuleiro[16]; // Entrada em forma de vetor, ja em espiral
+posicoes pecas_corretas[16] = {
+        {2,1}, {0,0}, {0,1}, {0,2},
+        {0,3}, {1,3}, {2,3}, {3,3},
+        {3,2}, {3,1}, {3,0}, {2,0},
+        {1,0}, {1,1}, {1,2}, {2,2}
+}; // "Gabarito" da matriz
 
 // ========================== Funcoes gerais ========================== 
-void organiza_posicoes_pecas(){
+/*void organiza_posicoes_pecas(){
   pecas_corretas[0].i = 2; 
   pecas_corretas[0].j = 1; 
   
@@ -65,6 +84,7 @@ void organiza_posicoes_pecas(){
   pecas_corretas[15].j = 2; 
   
 }
+*/
 
 int max_3(int v1, int v2, int v3){
   int maior;
@@ -88,7 +108,7 @@ int distancia_manhatan(int valor, int i, int j){
   i_correto = pecas_corretas[valor].i;
   j_correto = pecas_corretas[valor].j;
 
-  if (i > i_correto){
+  /*if (i > i_correto){
     soma += i - i_correto;
   } else {
     soma += i_correto - i;
@@ -98,12 +118,15 @@ int distancia_manhatan(int valor, int i, int j){
     soma += j - j_correto;
   } else {
     soma += j_correto - j;
-  }
+  }*/
+
+  soma += abs(j - j_correto);
+  soma += abs(i - i_correto);
 
   return soma;
 }
 
-void organiza_espiral(int entrada[][4]){
+void organiza_espiral(int entrada[][4], int tabuleiro[16]){
   int j;
 
   j = 0;
@@ -132,15 +155,17 @@ void le_tabuleiro(){
             &in[2][0], &in[2][1], &in[2][2], &in[2][3],
             &in[3][0], &in[3][1], &in[3][2], &in[3][3]);
 
-  organiza_espiral(in);
+  organiza_espiral(in, tabuleiro);
 }
 
 // ========================== Heuristicas ========================== 
-int h_linha_1(){
+int h_linha_1(int in[][4]){
   int tabuleiro_correto[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, 0};
+  int tabuleiro[16];
   int pecas_fora, i;
 
   pecas_fora = i = 0;
+  organiza_espiral(in, tabuleiro);
 
   while(i < 16){
     if(tabuleiro[i] != tabuleiro_correto[i]){
@@ -154,8 +179,11 @@ int h_linha_1(){
   return pecas_fora;
 }
 
-int h_linha_2(){
+int h_linha_2(int in[][4]){
   int pecas_fora, i;
+  int tabuleiro[16];
+
+  organiza_espiral(in, tabuleiro);
 
   pecas_fora = 0;
   i = 1;
@@ -170,7 +198,7 @@ int h_linha_2(){
   return pecas_fora;
 }
 
-int h_linha_3(){
+int h_linha_3(int in[][4]){
   int i, j, soma;
 
   soma = 0;
@@ -186,12 +214,66 @@ int h_linha_3(){
   return soma;
 }
 
-int h_linha_4(){
-  return 0;
+int h_linha_4(int in[][4]){
+  float p[3] = {0.4, 0.2, 0.4};
+
+  return p[0]*h_linha_1(in) + p[1]*h_linha_2(in) + p[2]*h_linha_3(in);
 }
 
-int h_linha_5(){
-  return max_3(h_linha_1(), h_linha_2(), h_linha_3());
+int h_linha_5(int in[][4]){
+  return max_3(h_linha_1(in), h_linha_2(in), h_linha_3(in));
+}
+
+// ========================== A* ========================== 
+int existe_em_T(int matriz[][4], int T[][4]){
+  int i,j, booleano;
+
+  booleano = 1;
+  i = j = 0;
+  while(i<4 && booleano){
+    while(j<4 && booleano){
+      if(matriz[i][j] != T[i][j]){
+        booleano = 0;
+      }
+      j++;
+    }
+    j=0;
+    i++;
+  }
+
+  return booleano;
+}
+
+int A_star(int in[][4]){
+  estados *A, *S, *F, *v;
+  estados *Menor;
+  int T[4][4] ={{ 1, 2 ,3, 4},
+                {12,13,14, 5},
+                {11, 0,15, 6},
+                {10, 9, 8, 7}
+  };
+
+  //A <= S
+  A = malloc(sizeof(estados));
+  A->entrada.matriz = in;
+  A->proximo = NULL;
+
+  // F <= NULL
+  F = NULL;
+
+  // Para all s em S
+  S = malloc(sizeof(estados));
+  S->proximo = NULL;
+  S->entrada.matriz = in;
+  S->entrada.g = 0;
+  S->entrada.Pai = NULL;
+  S->entrada.h = h_linha_2(S->entrada.matriz);
+
+  //for all
+
+
+
+  return 0;
 }
 
 // ========================== In/Out ========================== 
@@ -222,22 +304,45 @@ void print_entrada(int entrada[][4]){
 
 //  ========================== main  ========================== 
 int main(){
-  //int h1;
-  //int h2;
-  int h3;
+  int h[5];
+  clock_t aux;
+  double tempo[5];
 
-  organiza_posicoes_pecas();
+  //organiza_posicoes_pecas();
   le_tabuleiro();
   //print_inline_tabuleiro();
 
-  //h1 = h_linha_1();
-  //printf("%d", h1);
+  aux = clock();
+  h[0] = h_linha_1(in);
+  tempo[0] = (double)(clock() - aux)/ CLOCKS_PER_SEC;
 
-  //h2 = h_linha_2();
-  //printf("%d", h2);
+  aux = clock();
+  h[1] = h_linha_2(in);
+  tempo[1] = (double)(clock() - aux)/ CLOCKS_PER_SEC;  
 
-  h3 = h_linha_3();
-  printf("%d", h3);
+  aux = clock();  
+  h[2] = h_linha_3(in);
+  tempo[2] = (double)(clock() - aux)/ CLOCKS_PER_SEC;  
+
+  aux = clock();  
+  h[3] = h_linha_4(in);
+  tempo[3] = (double)(clock() - aux)/ CLOCKS_PER_SEC;  
+
+  aux = clock();  
+  h[4] = h_linha_5(in);
+  tempo[4] = (double)(clock() - aux)/ CLOCKS_PER_SEC;
+  
+  //printf("%d", h[0]);
+  //printf("%d", h[1]);
+  //printf("%d", h[2]);
+  //printf("%d", h[3]);
+  //printf("%d", h[4]);
+
+  printf("Heuristica 1: %d / Tempo de Execucao: %f\n", h[0], tempo[0]);
+  printf("Heuristica 2: %d / Tempo de Execucao: %f\n", h[1], tempo[1]);
+  printf("Heuristica 3: %d / Tempo de Execucao: %f\n", h[2], tempo[2]);
+  printf("Heuristica 4: %d / Tempo de Execucao: %f\n", h[3], tempo[3]);
+  printf("Heuristica 5: %d / Tempo de Execucao: %f\n", h[4], tempo[4]);
 
   return 0;
 }

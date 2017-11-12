@@ -1,5 +1,20 @@
 import math
 
+#Classe para guardar o tabuleiro
+class entradaAStar: 
+    def __init__(self, matriz, g, h, pai, proximo):
+        self.matriz = matriz
+        self.g = g
+        self.h = h
+        self.pai = pai
+        self.proximo = proximo 
+
+    def f(self):
+        return self.g + self.h
+
+    def g_pp(self):
+        self.g +=1
+
 #Variaveis Globais
 pecas_corretas = [
         [2,1], [0,0], [0,1], [0,2],
@@ -98,6 +113,21 @@ def h_linha_5(entrada):
     return max(h_linha_1(entrada), h_linha_2(entrada), h_linha_3(entrada))
 
 
+# A*
+def AStar(start):
+    A = []
+    F =set()
+
+    node = entradaAStar(start,0,h_linha_5(start), [],[])
+    A.append(node)
+    v = node
+
+    while A:
+        A.remove(v)
+        F = F | v
+
+
+
 # Main
 def main():
     h = list(range(5))
@@ -127,11 +157,11 @@ def main():
     h[4] = h_linha_5(entrada)
     #tempo[4] = (double)(clock() - aux)/ CLOCKS_PER_SEC;
   
-    printf(h[0])
-    printf(h[1])
-    printf(h[2])
-    printf(h[3])
-    printf(h[4])
+    print(h[0])
+    print(h[1])
+    print(h[2])
+    print(h[3])
+    print(h[4])
 
     #printf("Heuristica 1: %d / Tempo de Execucao: %f\n", h[0], tempo[0]);
     #printf("Heuristica 2: %d / Tempo de Execucao: %f\n", h[1], tempo[1]);
