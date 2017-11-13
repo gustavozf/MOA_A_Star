@@ -1,4 +1,4 @@
-import math, copy
+import math, copy, heapq
 
 ################################ Classe para guardar o tabuleiro################################
 class entradaAStar: 
@@ -172,12 +172,17 @@ def AStar(start):
     A[str(start)] = entradaAStar(start,0,h_linha_5(start), [], [])
     # F <- 0
     F = {}
-    v = A.get(str(start)) 
+
+    h = []
+    v = A.get(str(start))
+    heapq.heappush(h, (A.get(str(start)).f(), str(start)))
 
     #while A:
     while A and (str(v.matriz) != T):
         # v existe em A, tal que, f(v) = min {f(v)}
-        v = A.get(findMenor(A))
+        #v = A.get(findMenor(A))
+        posicao = heapq.heappop(h)
+        v = A.get(posicao[1])
         #print("V: " + str(v.matriz) + " g: "+ str(v.g))
 
         # A <- A - {v}
@@ -208,26 +213,23 @@ def AStar(start):
                 A[str(m[i].matriz)].pai = v;
                 A[str(m[i].matriz)].h = h_linha_5(m[i].matriz)
 
-    return (str(v.g))
+                #heap para achar o menor
+                heapq.heappush(h, (A[str(m[i].matriz)].f(), str(m[i].matriz)))
+
+    return (v.g)
 
 ######################################## Main ########################################
 def main():
-    h = list(range(5))
     entrada = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     tabuleiro = list(range(16))
 
     le_tabuleiro(entrada, tabuleiro)
-    #h[0] = h_linha_1(entrada)
-    #h[1] = h_linha_2(entrada)
-    #h[2] = h_linha_3(entrada) 
-    #h[3] = h_linha_4(entrada) 
-    #h[4] = h_linha_5(entrada)
   
-    #print(h[0])
-    #print(h[1])
-    #print(h[2])
-    #print(h[3])
-    #print(h[4])
+    #print(h_linha_1(entrada))
+    #print(h_linha_2(entrada))
+    #print(h_linha_3(entrada))
+    #print(h_linha_4(entrada))
+    #print(h_linha_5(entrada))
     print(AStar(entrada))
 
 
