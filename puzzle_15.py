@@ -1,9 +1,9 @@
-import math
+import math, copy
 
-#Classe para guardar o tabuleiro
+################################ Classe para guardar o tabuleiro################################
 class entradaAStar: 
     def __init__(self, matriz, g, h, pai, sucessores):
-        self.matriz = list(matriz)
+        self.matriz = copy.deepcopy(matriz)
         self.g = g
         self.h = h
         self.pai = pai
@@ -11,21 +11,18 @@ class entradaAStar:
 
     def f(self):
         return self.g + self.h
-
-    def g_pp(self):
-        self.g +=1
     
     def add_sucessor(self, sucessor):
         self.sucessores.append(sucessor)
 
-#Variaveis Globais
+######################################## Variaveis Globais ########################################
 pecas_corretas = [
         [2,1], [0,0], [0,1], [0,2],
         [0,3], [1,3], [2,3], [3,3],
         [3,2], [3,1], [3,0], [2,0],
         [1,0], [1,1], [1,2], [2,2]]
 
-# Funcoes Gerais
+######################################## Funcoes Gerais ########################################
 def distancia_manhatan(valor, i, j):
     soma = 0
 
@@ -65,7 +62,7 @@ def le_tabuleiro(entrada, tabuleiro):
     organiza_espiral(entrada, tabuleiro)
 
 def acha_sucessores(node):
-    matriz = list(node.matriz)
+    matriz = copy.deepcopy(node.matriz)
     condicao = False
     i = j = 0
 
@@ -79,28 +76,40 @@ def acha_sucessores(node):
             j +=1
 
     if ((i-1)>=0):
-        matriz1 = list(node.matriz)
+        matriz1 = copy.deepcopy(node.matriz)
         # troca a peca de lugar com o 0
         matriz1[i][j], matriz1[i-1][j] = matriz1[i-1][j], matriz1[i][j]
         # adiciona nos filhos do node
         node.add_sucessor(entradaAStar(matriz1,node.g +1,0, [], []))
 
     if ((i+1)<=3):
-        matriz2 = list(node.matriz)
+        matriz2 = copy.deepcopy(node.matriz)
         matriz2[i][j], matriz2[i+1][j] = matriz2[i+1][j], matriz2[i][j]
         node.add_sucessor(entradaAStar(matriz2,node.g +1,0, [], []))
 
     if ((j-1)>=0):
-        matriz3 = list(node.matriz)
+        matriz3 = copy.deepcopy(node.matriz)
         matriz3[i][j], matriz3[i][j-1] = matriz3[i][j-1], matriz3[i][j]
         node.add_sucessor(entradaAStar(matriz3,node.g +1,0, [],[]))
 
     if ((j+1)<=3):
-        matriz4 = list(node.matriz)
+        matriz4 = copy.deepcopy(node.matriz)
         matriz4[i][j], matriz4[i][j+1] = matriz4[i][j+1], matriz4[i][j]
         node.add_sucessor(entradaAStar(matriz4,node.g +1,0, [], []))
 
-# Heuristicas
+def findMenor(A):
+    valores = list(A.values())
+    v = valores[0].f()
+    menor = valores[0]
+
+    for elem in valores:
+        if (elem.f() < v):
+            v = elem.f()
+            menor = elem
+
+    return str(menor.matriz)
+
+######################################## Heuristicas ########################################
 def h_linha_1(entrada):
     tabuleiro_correto = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0]
     tabuleiro = list(range(16))
@@ -152,28 +161,26 @@ def h_linha_5(entrada):
     return max(h_linha_1(entrada), h_linha_2(entrada), h_linha_3(entrada))
 
 
-# A*
+######################################### A* #########################################
 def AStar(start):
     print()
-    T = '[[1,2,3,4],[12,13,14,5],[11,0,15,16],[10,9,8,7]]'
-
-    #A = []
+    matriz_final = [[1,2,3,4],[12,13,14,5],[11,0,15,6],[10,9,8,7]]
+    T = str(matriz_final)
     A = {}          # Dicionario: {"key" : "objeto"}
                     # https://docs.python.org/3/library/stdtypes.html#dict
     
-    node = entradaAStar(start,0,h_linha_5(start), [], [])
     # A <- S
-    A[str(node.matriz)] = node
-
+    A[str(start)] = entradaAStar(start,0,h_linha_5(start), [], [])
+   
     # F <- 0
     F = {}
 
-    v = node
-    menor = v
-    
+    v = A.get(str(start)) 
+
     #while A:
-    while A and v != T:
+    while A and (str(v.matriz) != T):
         # v existe em A, tal que, f(v) = min {f(v)}
+        v = A[findMenor(A)]
         print("V: " + str(v.matriz) + " g: "+ str(v.g))
 
         # A <- A - {v}
@@ -185,9 +192,10 @@ def AStar(start):
         F[str(v.matriz)] = v
 
         # Para cada m(e)Gamma(v)
-        acha_sucessores(v)
+        if not v.sucessores:
+            acha_sucessores(v)
+        m = v.sucessores
         for i in range(0, len(v.sucessores)):
-            m = v.sucessores
             # calcule g(m)
             #m[i].g += 1 (ja feito ao achar o sucessor)
             print("Filho #" + str(i+1)+": " + str(m[i].matriz) + " g: "+str(m[i].g))
@@ -211,62 +219,39 @@ def AStar(start):
             if (m_linha not in A) and (m_linha not in F):
                 # A <- A(U){m}
                 A[str(m[i].matriz)] = m[i]
-                m[i].pai = v;
-                m[i].h = h_linha_5(m[i].matriz)
+                A[str(m[i].matriz)].pai = v;
+                A[str(m[i].matriz)].h = h_linha_5(m[i].matriz)
 
                 print("Entrou condicao 2")
                 
                 # Verifica se o valor insirido em A
                 # é menor que o menor atual (v)
-                if m[i].f() < v.f():
-                    print("Encontrou Menor!")
-                    menor = m[i]
+                #if m[i].f() < v.f():
+                #    print("Encontrou Menor!")
+                #    menor = m[i]
 
-        v = menor
         print()
     return ("Final do A*")
 
-# Main
+######################################## Main ########################################
 def main():
     h = list(range(5))
     entrada = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     tabuleiro = list(range(16))
+
     le_tabuleiro(entrada, tabuleiro)
-    print(entrada)
-    print(tabuleiro)
-
-    #aux = clock();
     h[0] = h_linha_1(entrada)
-    #tempo[0] = (double)(clock() - aux)/ CLOCKS_PER_SEC;
-
-    #aux = clock();
     h[1] = h_linha_2(entrada)
-    #tempo[1] = (double)(clock() - aux)/ CLOCKS_PER_SEC;  
-
-    #aux = clock();  
-    h[2] = h_linha_3(entrada)
-    #tempo[2] = (double)(clock() - aux)/ CLOCKS_PER_SEC;  
-
-    #aux = clock();  
-    h[3] = h_linha_4(entrada)
-    #tempo[3] = (double)(clock() - aux)/ CLOCKS_PER_SEC;  
-
-    #aux = clock();  
+    h[2] = h_linha_3(entrada) 
+    h[3] = h_linha_4(entrada) 
     h[4] = h_linha_5(entrada)
-    #tempo[4] = (double)(clock() - aux)/ CLOCKS_PER_SEC;
   
     #print(h[0])
     #print(h[1])
     #print(h[2])
     #print(h[3])
     #print(h[4])
-
     print(AStar(entrada))
-    #printf("Heuristica 1: %d / Tempo de Execucao: %f\n", h[0], tempo[0]);
-    #printf("Heuristica 2: %d / Tempo de Execucao: %f\n", h[1], tempo[1]);
-    #printf("Heuristica 3: %d / Tempo de Execucao: %f\n", h[2], tempo[2]);
-    #printf("Heuristica 4: %d / Tempo de Execucao: %f\n", h[3], tempo[3]);
-    #printf("Heuristica 5: %d / Tempo de Execucao: %f\n", h[4], tempo[4]);
 
 
 if __name__ == '__main__':
