@@ -163,7 +163,6 @@ def h_linha_5(entrada):
 
 ######################################### A* #########################################
 def AStar(start):
-    print()
     matriz_final = [[1,2,3,4],[12,13,14,5],[11,0,15,6],[10,9,8,7]]
     T = str(matriz_final)
     A = {}          # Dicionario: {"key" : "objeto"}
@@ -180,8 +179,8 @@ def AStar(start):
     #while A:
     while A and (str(v.matriz) != T):
         # v existe em A, tal que, f(v) = min {f(v)}
-        v = A[findMenor(A)]
-        print("V: " + str(v.matriz) + " g: "+ str(v.g))
+        v = A.get(findMenor(A))
+        #print("V: " + str(v.matriz) + " g: "+ str(v.g))
 
         # A <- A - {v}
         #A.remove(v)
@@ -198,7 +197,7 @@ def AStar(start):
         for i in range(0, len(v.sucessores)):
             # calcule g(m)
             #m[i].g += 1 (ja feito ao achar o sucessor)
-            print("Filho #" + str(i+1)+": " + str(m[i].matriz) + " g: "+str(m[i].g))
+            #print("Filho #" + str(i+1)+": " + str(m[i].matriz) + " g: "+str(m[i].g))
 
             # Se existe m' em A, tal que 
             # m'=m e g(m)<g(m')
@@ -206,7 +205,6 @@ def AStar(start):
             if (m_linha in A) and (m[i].g < A[m_linha].g):
                 # A <- A - {m'}
                 A.pop(m_linha)
-                print("Entrou condicao 1")
 
             # Se existe m' em F, tal que 
             # m'=m e g(m)<g(m')
@@ -221,8 +219,6 @@ def AStar(start):
                 A[str(m[i].matriz)] = m[i]
                 A[str(m[i].matriz)].pai = v;
                 A[str(m[i].matriz)].h = h_linha_5(m[i].matriz)
-
-                print("Entrou condicao 2")
                 
                 # Verifica se o valor insirido em A
                 # é menor que o menor atual (v)
@@ -230,8 +226,7 @@ def AStar(start):
                 #    print("Encontrou Menor!")
                 #    menor = m[i]
 
-        print()
-    return ("Final do A*")
+    return (str(v.g))
 
 ######################################## Main ########################################
 def main():
@@ -240,11 +235,11 @@ def main():
     tabuleiro = list(range(16))
 
     le_tabuleiro(entrada, tabuleiro)
-    h[0] = h_linha_1(entrada)
-    h[1] = h_linha_2(entrada)
-    h[2] = h_linha_3(entrada) 
-    h[3] = h_linha_4(entrada) 
-    h[4] = h_linha_5(entrada)
+    #h[0] = h_linha_1(entrada)
+    #h[1] = h_linha_2(entrada)
+    #h[2] = h_linha_3(entrada) 
+    #h[3] = h_linha_4(entrada) 
+    #h[4] = h_linha_5(entrada)
   
     #print(h[0])
     #print(h[1])
