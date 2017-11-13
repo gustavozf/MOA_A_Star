@@ -170,10 +170,8 @@ def AStar(start):
     
     # A <- S
     A[str(start)] = entradaAStar(start,0,h_linha_5(start), [], [])
-   
     # F <- 0
     F = {}
-
     v = A.get(str(start)) 
 
     #while A:
@@ -183,11 +181,8 @@ def AStar(start):
         #print("V: " + str(v.matriz) + " g: "+ str(v.g))
 
         # A <- A - {v}
-        #A.remove(v)
         A.pop(str(v.matriz))
-        
         # F <- F U {v}
-        #F.append(v)
         F[str(v.matriz)] = v
 
         # Para cada m(e)Gamma(v)
@@ -206,25 +201,12 @@ def AStar(start):
                 # A <- A - {m'}
                 A.pop(m_linha)
 
-            # Se existe m' em F, tal que 
-            # m'=m e g(m)<g(m')
-            #if (m_linha in F) and (m[i].g < F[m_linha].g):
-                # F <- F - {m'}
-            #    F.pop(m_linha)
-            #    print("Entrou condicao 2")
-
             # se m nao existe em A(U)F
             if (m_linha not in A) and (m_linha not in F):
                 # A <- A(U){m}
                 A[str(m[i].matriz)] = m[i]
                 A[str(m[i].matriz)].pai = v;
                 A[str(m[i].matriz)].h = h_linha_5(m[i].matriz)
-                
-                # Verifica se o valor insirido em A
-                # é menor que o menor atual (v)
-                #if m[i].f() < v.f():
-                #    print("Encontrou Menor!")
-                #    menor = m[i]
 
     return (str(v.g))
 
