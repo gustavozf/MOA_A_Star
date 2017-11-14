@@ -1,0 +1,40 @@
+Caso1:
+R: 14
+T: 0m0.045s
+
+Caso2:
+R: 32
+T: 0m2.975s
+
+Caso3:
+R: 39
+T: 9m14.249s
+
+Caso4:
+R: 
+T: 
+
+Caso5:
+R: 41
+T: 2m15.925s
+
+Caso6:
+R: 49
+T: 3m45.798s
+
+Caso7:
+R: 28
+T: 0m0.222s
+
+Caso8:
+R: 28
+T: 0m0.349s
+
+Caso9:
+R: 39
+T: 13m58.331s
+
+Caso10:
+R: 33
+T: 52m2.365s
+

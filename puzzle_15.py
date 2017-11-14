@@ -154,7 +154,7 @@ def h_linha_3(entrada):
 def h_linha_4(entrada):
     p = [0.4, 0.2, 0.4];
 
-    return p[0]*h_linha_1(entrada) + p[1]*h_linha_2(entrada) + p[2]*h_linha_3(entrada)
+    return int(p[0]*h_linha_1(entrada) + p[1]*h_linha_2(entrada) + p[2]*h_linha_3(entrada))
 
 
 def h_linha_5(entrada):
@@ -174,14 +174,18 @@ def AStar(start):
     F = {}
 
     h = []
-    v = A.get(str(start))
     heapq.heappush(h, (A.get(str(start)).f(), str(start)))
 
+    v = A.get(str(start))
     #while A:
     while A and (str(v.matriz) != T):
         # v existe em A, tal que, f(v) = min {f(v)}
         #v = A.get(findMenor(A))
-        posicao = heapq.heappop(h)
+        condicao = True
+        while condicao:
+            posicao = heapq.heappop(h)
+            if posicao[1] in A:
+                condicao = False
         v = A.get(posicao[1])
         #print("V: " + str(v.matriz) + " g: "+ str(v.g))
 
