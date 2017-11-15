@@ -72,8 +72,30 @@ def acha_sucessores(node):
         node.add_sucessor(entradaAStar(matriz4,node.g +1,0,[], []))
         print(matriz4)
 
-    
 
+matriz1 = [[0,1,2,3],[12,14,5,4],[11,13,15,6],[10,9,8,7]]
+matriz2 = [[0,1,2,3],[12,14,5,4],[11,13,15,6],[10,9,8,7]]
+matriz3 = [[0,1,2,3],[12,14,5,4],[11,13,15,6],[10,9,8,7]]
+
+A = []
+TabuleirosA = []
+A.append(entradaAStar(matriz1,0,7,[],[]))
+TabuleirosA.append(str(matriz1))
+A.append(entradaAStar(matriz2,0,7,[],[]))
+TabuleirosA.append(str(matriz2))
+A.append(entradaAStar(matriz3,0,7,[],[]))
+TabuleirosA.append(str(matriz3))
+
+print(A)
+print(TabuleirosA)
+
+r = TabuleirosA.index(str(matriz2))
+A.pop(r)
+TabuleirosA.pop(r)
+
+print(A)
+print(TabuleirosA)
+'''
 A = {}
 i = j = 0
 matriz1 = [[0,1,2,3],[12,14,5,4],[11,13,15,6],[10,9,8,7]]
@@ -84,7 +106,7 @@ print(m.matriz)
 if str(m.matriz) == str([[1,2,3,4],[12,13,14,5],[11,0,15,6],[10,9,8,7]]):
     print("Oba")
 
-'''
+
 matriz2 = copy.deepcopy(matriz1)
 matriz3 = copy.deepcopy(matriz1)
 matriz4 = copy.deepcopy(matriz1)
